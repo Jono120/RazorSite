@@ -13,12 +13,12 @@ namespace RazorSiteML.ConsoleApp
 {
     public static class ModelBuilder
     {
-        private static string TRAIN_DATA_FILEPATH = @"C:\Users\Jonathan.Lake\AppData\Local\Temp\d9c203d3-003e-4f9d-ab4f-36d050ea2433.tsv";
-        private static string MODEL_FILEPATH = @"../../../../RazorSiteML.Model/MLModel.zip";
+        private const string TRAIN_DATA_FILEPATH = @"C:\Users\Jonathan.Lake\AppData\Local\Temp\d9c203d3-003e-4f9d-ab4f-36d050ea2433.tsv";
+        private const string MODEL_FILEPATH = @"../../../../RazorSiteML.Model/MLModel.zip";
 
         // Create MLContext to be shared across the model creation workflow objects 
         // Set a random seed for repeatable/deterministic results across multiple trainings.
-        private static MLContext mlContext = new MLContext(seed: 1);
+        private static readonly MLContext mlContext = new MLContext(seed: 1);
 
         public static void CreateModel()
         {
@@ -60,6 +60,11 @@ namespace RazorSiteML.ConsoleApp
 
         public static ITransformer TrainModel(MLContext mlContext, IDataView trainingDataView, IEstimator<ITransformer> trainingPipeline)
         {
+            if (mlContext is null)
+            {
+                throw new ArgumentNullException(nameof(mlContext));
+            }
+
             Console.WriteLine("=============== Training  model ===============");
 
             ITransformer model = trainingPipeline.Fit(trainingDataView);

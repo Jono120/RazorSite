@@ -24,13 +24,24 @@ namespace RazorSite
                     webBuilder.UseStartup<Startup>();
                 });
 
-        // Add input data
-        var input = new ModelInput();
+        //    // Add your training & prediction key from the settings page of the portal
+        //    string trainingKey = Environment.GetEnvironmentVariable("45c714d75ff847fd8e45719009d766d6");
+        //    string predictionKey = Environment.GetEnvironmentVariable("b83ef8fe0107440290701e3fc97cea59");
 
-        // Load model and predict output of sample data
-        ModelOutput result = ConsumeModel.Predict(input);
+        //    string ENDPOINT = Environment.GetEnvironmentVariable("https://australiaeast.api.cognitive.microsoft.com/");
 
-        //string trainingkey = Environment.GetEnvironmentVariable("45c714d75ff847fd8e45719009d766d6");
-        //string predictionkey = Environment.GetEnvironmentVariable("");
+        //    // Create a new project
+
+        //        var project = TrainingApi.CreateProject("My New Project");
+
+        //    // Make two tags in the new project
+        //    var hemlockTag = TrainingApi.CreateTag(project.Id, "Hemlock");
+        //    var japaneseCherryTag = TrainingApi.CreateTag(project.Id, "Japanese Cherry");
+
+        //    internal CustomVisionTrainingClient TrainingApi { get; set; } = new CustomVisionTrainingClient()
+        //    {
+        //        ApiKey = trainingKey,
+        //        Endpoint = ENDPOINT
+        //    };
     }
 }

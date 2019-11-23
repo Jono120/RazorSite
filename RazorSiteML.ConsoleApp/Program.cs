@@ -15,6 +15,10 @@ namespace RazorSiteML.ConsoleApp
 
         static void Main(string[] args)
         {
+            if (args is null)
+            {
+                throw new ArgumentNullException(nameof(args));
+            }
             // Create single instance of sample data from first line of dataset for model input
             ModelInput sampleData = CreateSingleDataSample(DATA_FILEPATH);
 
