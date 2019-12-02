@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
     <PackageReference Include="Microsoft.Azure.CognitiveServices.Vision.ComputerVision" Version="5.0.0" />
     <PackageReference Include="Microsoft.Azure.Management.CognitiveServices" Version="5.1.0" />
     <PackageReference Include="Microsoft.Bot.Builder.CognitiveServices" Version="1.1.7" />

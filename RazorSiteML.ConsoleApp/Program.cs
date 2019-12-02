@@ -8,31 +8,119 @@ using RazorSiteML.Model;
 
 namespace RazorSiteML.ConsoleApp
 {
-    class Program
+    using Microsoft.Azure.CognitiveServices.Vision.ComputerVision;
+    using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
+    using System.IO;
+    using System.Threading.Tasks;
+
+    public static class Program
     {
-        //Dataset to use for predictions 
-        private const string DATA_FILEPATH = @"C:\Users\Jonathan.Lake\AppData\Local\Temp\d9c203d3-003e-4f9d-ab4f-36d050ea2433.tsv";
-
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            if (args is null)
+
+            //Computer Vision Endpoint and Subscription key
+            string subscriptionKey = Environment.GetEnvironmentVariable("b3bdfe3d705041f88c6d4fde88c88981");
+            string endpoint = Environment.GetEnvironmentVariable("https://visionpage.cognitiveservices.azure.com/");
+
+            try
             {
-                throw new ArgumentNullException(nameof(args));
+                TagImageSample.RunAsync(endpoint, subscriptionKey).Wait(5000);
             }
-            // Create single instance of sample data from first line of dataset for model input
-            ModelInput sampleData = CreateSingleDataSample(DATA_FILEPATH);
+            catch (Exception e)
+            {
+                Console.Write(e.Message);
+            }
 
-            // Make a single prediction on the sample data and print results
-            ModelOutput predictionResult = ConsumeModel.Predict(sampleData);
-
-            Console.WriteLine("Using model to make single prediction -- Comparing actual Label with predicted Label from sample data...\n\n");
-            Console.WriteLine($"ImageSource: {sampleData.ImageSource}");
-            Console.WriteLine($"\n\nActual Label: {sampleData.Label} \nPredicted Label value {predictionResult.Prediction} \nPredicted Label scores: [{String.Join(",", predictionResult.Score)}]\n\n");
-            Console.WriteLine("=============== End of process, hit any key to finish ===============");
-            Console.ReadKey();
+            //CreateHostBuilder(args).Build().Run();
+            //var input = new ModelInput();
+            //ModelOutput result = ConsumeModel.Predict(input);
         }
 
+        public static class TagImageSample
+        {
+            public static async Task RunAsync(string endpoint, string key)
+            {
+                ComputerVisionClient computerVision = new ComputerVisionClient(new ApiKeyServiceClientCredentials(key))
+                {
+                    Endpoint = endpoint
+                };
+
+                string localImagePath = @"Images\objects.jpg";   // See this repo's readme.md for info on how to get these images. Alternatively, you can just set the path to any appropriate image on your machine.
+                string remoteImageUrl = "https://github.com/Azure-Samples/cognitive-services-sample-data-files/raw/master/ComputerVision/Images/faces.jpg";
+
+                Console.WriteLine("Image tags");
+                await TagImageFromUrlAsync(computerVision, remoteImageUrl);
+                await TagImageFromStreamAsync(computerVision, localImagePath);
+            }
+
+            //Analyse the remote images
+            private static async Task TagImageFromUrlAsync(ComputerVisionClient computerVision, string imageURL)
+            {
+                if (!Uri.IsWellFormedUriString(imageURL, UriKind.Absolute))
+                {
+                    Console.WriteLine("\nInvalid remote image url:\n{0} \n", imageURL);
+                    return;
+                }
+
+                TagResult tags = await computerVision.TagImageAsync(imageURL);
+
+                Console.WriteLine(imageURL);
+                DisplayTags(tags);
+
+            }
+
+            private static async Task TagImageFromStreamAsync(ComputerVisionClient computervision, string imagePath)
+            {
+                if (!File.Exists(imagePath))
+                {
+                    Console.WriteLine("\nUnable to open or read local image path:\n{0} \n", imagePath);
+                    return;
+                }
+                using (Stream imageStream = File.OpenRead(imagePath))
+                {
+                    TagResult tags = await computervision.TagImageInStreamAsync(imageStream);
+                    Console.WriteLine(imagePath);
+                    DisplayTags(tags);
+                }
+            }
+
+            private static void DisplayTags(TagResult tags)
+            {
+                foreach (var tag in tags.Tags)
+                {
+                    Console.WriteLine("{0}\twith confidence {1}", tag.Name, tag.Confidence);
+                }
+                Console.WriteLine("\n");
+            }
+
+        }
+
+        //class Program
+        //{
+        //    //Dataset to use for predictions 
+        //    private const string DATA_FILEPATH = @"C:\Users\Jonathan.Lake\AppData\Local\Temp\d9c203d3-003e-4f9d-ab4f-36d050ea2433.tsv";
+
+        //    static void Main(string[] args)
+        //    {
+        //        if (args is null)
+        //        {
+        //            throw new ArgumentNullException(nameof(args));
+        //        }
+        //        // Create single instance of sample data from first line of dataset for model input
+        //        ModelInput sampleData = CreateSingleDataSample(DATA_FILEPATH);
+
+        //        // Make a single prediction on the sample data and print results
+        //        ModelOutput predictionResult = ConsumeModel.Predict(sampleData);
+
+        //        Console.WriteLine("Using model to make single prediction -- Comparing actual Label with predicted Label from sample data...\n\n");
+        //        Console.WriteLine($"ImageSource: {sampleData.ImageSource}");
+        //        Console.WriteLine($"\n\nActual Label: {sampleData.Label} \nPredicted Label value {predictionResult.Prediction} \nPredicted Label scores: [{String.Join(",", predictionResult.Score)}]\n\n");
+        //        Console.WriteLine("=============== End of process, hit any key to finish ===============");
+        //        Console.ReadKey();
+        //    }
+
         // Change this code to create your own sample data
+
         #region CreateSingleDataSample
         // Method to load single row of dataset to try a single prediction
         private static ModelInput CreateSingleDataSample(string dataFilePath)
