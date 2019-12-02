@@ -15,8 +15,34 @@ namespace RazorSite
         public static void Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();
+
+            //var input = new ModelInput();
+
+            //ModelOutput result = ConsumeModel.Predict(input);
         }
 
+        class ImageData
+        {
+            public string ImagePath { get; set; }
+            public string Label { get; set; }
+        }
+
+        class ModelInput
+        {
+            public byte[] Image { get; set; }
+            public UInt32 LabelAsKey { get; set; }
+            public string ImagePath { get; set; }
+            public string Label { get; set; }
+        }
+
+        class ModelOutput
+        {
+            public string ImagePath { get; set; }
+            public string Label { get; set; }
+            public string PredictLabel { get; set; }
+        }
+
+        #region
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
@@ -24,24 +50,16 @@ namespace RazorSite
                     webBuilder.UseStartup<Startup>();
                 });
 
-        //    // Add your training & prediction key from the settings page of the portal
-        //    string trainingKey = Environment.GetEnvironmentVariable("45c714d75ff847fd8e45719009d766d6");
-        //    string predictionKey = Environment.GetEnvironmentVariable("b83ef8fe0107440290701e3fc97cea59");
+        // Add your Computer Vision subscription key and endpoint to your environment variables. 
+        // Close/reopen your project for them to take effect.
+        static string subscriptionKey = Environment.GetEnvironmentVariable("b3bdfe3d705041f88c6d4fde88c88981");
+        static string endpoint = Environment.GetEnvironmentVariable("https://visionpage.cognitiveservices.azure.com/");
 
-        //    string ENDPOINT = Environment.GetEnvironmentVariable("https://australiaeast.api.cognitive.microsoft.com/");
-
-        //    // Create a new project
-
-        //        var project = TrainingApi.CreateProject("My New Project");
-
-        //    // Make two tags in the new project
-        //    var hemlockTag = TrainingApi.CreateTag(project.Id, "Hemlock");
-        //    var japaneseCherryTag = TrainingApi.CreateTag(project.Id, "Japanese Cherry");
-
-        //    internal CustomVisionTrainingClient TrainingApi { get; set; } = new CustomVisionTrainingClient()
-        //    {
-        //        ApiKey = trainingKey,
-        //        Endpoint = ENDPOINT
-        //    };
+        internal CustomVisionTrainingClient TrainingApi { get; set; } = new CustomVisionTrainingClient()
+        {
+            ApiKey = "b3bdfe3d705041f88c6d4fde88c88981",
+            Endpoint = "https://visionpage.cognitiveservices.azure.com/"
+        };
+        #endregion
     }
 }

@@ -9,7 +9,7 @@ using RazorSiteML.Model;
 
 namespace RazorSiteML.Model
 {
-    public class ConsumeModel
+    public static class ConsumeModel
     {
         // For more info on consuming ML.NET models, visit https://aka.ms/model-builder-consume
         // Method for consuming model in your app
@@ -27,6 +27,7 @@ namespace RazorSiteML.Model
             // Use model to make prediction on input data
             ModelOutput result = predEngine.Predict(input);
             return result;
+
         }
     }
 }
