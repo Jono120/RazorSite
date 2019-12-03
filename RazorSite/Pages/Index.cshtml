@@ -1,23 +1,73 @@
-﻿@page
-@model IndexModel
+﻿@*@page
+    @model IndexModel
+    @{
+        ViewData["Title"] = "Home page";
+    }
+
+
+    <div class="text-center">
+        <h1 class="display-4">Welcome</h1>
+        <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+        <p>
+            This is a site for the development of Image classification and viewing technologies.<br />
+            It is also a test bed for the development of my learnings for the development of cognitive services.<br />
+            In particular the development of an auto classification system and tag searching for multimedia content.<br />
+        </p>
+    </div>
+
+    <div class="text-md-left">
+        <p>
+            <img
+        </p>
+    </div>*@
+
+
+@page
+@inject AlbumCollection ac
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Albums";
+    ViewData["Description"] = $"An online gallery where I share my photos with the world. Currently showing {ac.Albums.Count} albums ({string.Join(", ", ac.Albums.Select(a => a.Name))})";
+    ViewData["Image"] = Request.Scheme + "://" + Request.Host + ac.Albums.FirstOrDefault()?.CoverPhoto?.GetThumbnailLink((int)ImageType.Full, out int h);
 }
 
+<form id="admin" if-authorized method="post" action="~/album/new/create/">
+    <input type="text" name="name" id="name" aria-label="Album name" placeholder="Album name" required />
+    <input type="submit" id="newalbum" data-progress="Creating..." value="New album">
+</form>
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+@if (ac.Albums.Count == 0)
+{
+    <p>There are no albums yet. <a asp-page="Login">Sign in</a> to create new albums and upload photos.</p>
+}
 
-    <p>
-        This is a site for the development of Image classification and viewing technologies.<br />
-        It is also a test bed for the development of my learnings for the development of cognitive services.<br />
-        In particular the development of an auto classification system and tag searching for multimedia content.<br />
-    </p>
+<h2>Albums</h2>
+
+<div class="albumlist pic">
+    @{
+        foreach (Album album in ac.Albums)
+        {
+            var photo = album.CoverPhoto;
+            if (photo != null)
+            {
+                <a href="/album/@album.UrlName/" data-text="@album.Name (@album.Photos.Count)">
+                    <img photo="@photo" type="Thumbnail" />
+                </a>
+            }
+            else
+            {
+                <a href="/album/@album.UrlName/" data-text="@album.Name">
+
+                </a>
+            }
+        }
+    }
 </div>
 
-<div class="text-md-left">
-    <p>
-        <img 
-    </p>
-</div>
+@section head {
+    <link if-authorized rel="stylesheet" href="/css/admin.scss" />
+}
+
+@section scripts {
+    <script if-authorized src="/js/admin.js" async></script>
+}
