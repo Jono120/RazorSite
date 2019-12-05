@@ -1,7 +1,8 @@
-﻿using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
+﻿using PhotoGallery.Models;
 using SkiaSharp;
 using System;
 using System.IO;
+
 
 namespace RazorSite.Models
 {

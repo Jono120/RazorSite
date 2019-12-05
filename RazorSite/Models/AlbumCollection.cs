@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using PhotoGallery.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,11 +9,11 @@ namespace RazorSite.Models
 {
     public class AlbumCollection
     {
-        private IHostingEnvironment _environment;
+        private IWebHostEnvironment _environment;
         private static readonly string[] _extensions = { ".jpg", ".jpeg", ".gif", ".png" };
         private readonly ImageProcessor _imageProcessor;
 
-        public AlbumCollection(IHostingEnvironment environment, ImageProcessor imageProcessor)
+        public AlbumCollection(IWebHostEnvironment environment, ImageProcessor imageProcessor)
         {
             _environment = environment;
             Albums = new List<Album>();
